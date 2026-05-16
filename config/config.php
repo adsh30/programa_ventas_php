@@ -1,10 +1,10 @@
 <?php
-define('BASE_URL', 'http://localhost/programa/');
-define('HOST', 'localhost');
-define('USER', 'root');
-define('PASS', '');
-define('DBNAME', 'sistema');
-define('CHARSET', '');
+define('BASE_URL', 'https://programa-ventas-php.onrender.com/');
+define('HOST', 'bb0lbm0fo7ptuildo9ut-mysql.services.clever-cloud.com');
+define('USER', 'uepi5fg2f4oq1yzf');
+define('PASS', 'SBuMxIOA5pMmpk8l91k9');
+define('DBNAME', 'bb0lbm0fo7ptuildo9ut');
+define('CHARSET', 'utf8');
 define('TITLE', 'IngShop');
 define('MONEDA', '$');
 define('HOST_SMTP', 'smtp.gmail.com');
