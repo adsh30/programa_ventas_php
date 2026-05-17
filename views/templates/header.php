@@ -75,21 +75,6 @@
 				</li>
 				<?php } ?>
 				<li>
-					<a href="javascript:;" class="has-arrow">
-						<div class="parent-icon"><i class="fa-solid fa-clipboard-list"></i>
-						</div>
-						<div class="menu-title">Mantenimiento</div>
-					</a>
-					<ul>
-						<li> <a href="<?php echo BASE_URL .	'medidas'; ?>"><i class="bx bx-right-arrow-alt"></i>Medidas</a>
-						</li>
-						<li> <a href="<?php echo BASE_URL .	'categorias'; ?>"><i class="bx bx-right-arrow-alt"></i>Categorias</a>
-						</li>
-						<li> <a href="<?php echo BASE_URL .	'productos'; ?>"><i class="bx bx-right-arrow-alt"></i>Productos</a>
-						</li>
-					</ul>
-				</li>
-				<li>
 					<a href="<?php echo BASE_URL . 'clientes'; ?>">
 						<div class="parent-icon"><i class="fa-solid fa-users"></i>
 						</div>
