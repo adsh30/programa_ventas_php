@@ -82,54 +82,58 @@ class Principal extends Controller
         $this->views->getView('usuarios', 'reset', $data);
     }
 
-    public function enviarCorreo($correo)
-    {
-        $verificar = $this->model->verificarCorreo($correo);
-        if (!empty($verificar)) {
-            $mail = new PHPMailer(true);
-            $fecha = date('YmdHis');
-            $token = md5($fecha);
-            try {
-                //Server settings
-                //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
-                $mail->SMTPDebug = 0;                       //Enable verbose debug output
-                $mail->isSMTP();                                            //Send using SMTP
-                $mail->Host       = HOST_SMTP;                     //Set the SMTP server to send through
-                $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-                $mail->Username   = USER_SMTP;                     //SMTP username
-                $mail->Password   = CLAVE_SMTP;                               //SMTP password
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
-                $mail->Port       = PUERTO_SMTP;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+public function enviarCorreo($correo)
+{
+    $verificar = $this->model->verificarCorreo($correo);
+    if (!empty($verificar)) {
+        $mail = new PHPMailer(true);
+        $fecha = date('YmdHis');
+        $token = md5($fecha);
+        try {
+            // --- CAMBIO PARA DETECTAR ERRORES EN LA CONSOLA (F12) ---
+            $mail->SMTPDebug = 2; // Activa el log verboso temporalmente
+            
+            $mail->isSMTP();
+            $mail->Host       = HOST_SMTP;
+            $mail->SMTPAuth   = true;
+            $mail->Username   = USER_SMTP;
+            $mail->Password   = CLAVE_SMTP;
 
-                //Recipients
-                $mail->setFrom('angelicadsh30@gmail.com', 'INGSHOP');
-                $mail->addAddress($correo);
+            // --- AQUÍ AJUSTAMOS LA SEGURIDAD PARA RENDER (STARTTLS / 587) ---
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // Cambiado de ENCRYPTION_SMTPS
+            $mail->Port       = 587;                           // Usará el puerto 587 de forma dinámica en la nube
 
-                //Content
-                $mail->isHTML(true);
-                $mail->CharSet = 'UTF-8';                                  //Set email format to HTML
-                $mail->Subject = 'Restablecer Contraseña - ' . TITLE;
-                $mail->Body    = 'Has pedido restablecer tu contraseña, si no has sido omite este mensaje <br />
+            // Recipients
+            // Es buena práctica usar el mismo correo de autenticación como remitente para evitar que Gmail lo marque como phishing
+            $mail->setFrom(USER_SMTP, 'INGSHOP'); 
+            $mail->addAddress($correo);
+
+            // Content
+            $mail->isHTML(true);
+            $mail->CharSet = 'UTF-8';
+            $mail->Subject = 'Restablecer Contraseña - ' . TITLE;
+            $mail->Body    = 'Has pedido restablecer tu contraseña, si no has sido tú omite este mensaje <br />
             Para cambiar <a href="'.BASE_URL.'principal/reset/'.$token.'">CLICK AQUI</a>';
 
-                $mail->send();
+            $mail->send();
 
-                $verificarToken = $this->model->registrarToken($token, $correo);
-                if ($verificarToken == 1) {
-                    $res = array('msg' => 'CORREO ENVIADO CON UN TOKEN DE SEGURIDAD', 'type' => 'success');
-                } else {
-                    $res = array('msg' => 'ERROR AL REGISTRAR EL TOKEN', 'type' => 'error');
-                }
-                
-            } catch (Exception $e) {
-                $res = array('msg' => 'ERROR AL ENVIAR EL CORREO: ' . $mail->ErrorInfo, 'type' => 'error');
+            $verificarToken = $this->model->registrarToken($token, $correo);
+            if ($verificarToken == 1) {
+                $res = array('msg' => 'CORREO ENVIADO CON UN TOKEN DE SEGURIDAD', 'type' => 'success');
+            } else {
+                $res = array('msg' => 'ERROR AL REGISTRAR EL TOKEN', 'type' => 'error');
             }
-        }else{
-            $res = array('msg' => 'EL CORREO NO ESTA REGISTRADO', 'type' => 'warning');
+            
+        } catch (Exception $e) {
+            // Si el bloque 'try' falla, esto forzará un texto claro en la respuesta AJAX
+            $res = array('msg' => 'ERROR AL ENVIAR EL CORREO: ' . $mail->ErrorInfo, 'type' => 'error');
         }
-        echo json_encode($res, JSON_UNESCAPED_UNICODE);
-        die();
+    } else {
+        $res = array('msg' => 'EL CORREO NO ESTA REGISTRADO', 'type' => 'warning');
     }
+    echo json_encode($res, JSON_UNESCAPED_UNICODE);
+    die();
+}
 
     public function cambiarClave()
     {
