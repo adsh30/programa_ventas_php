@@ -19,3 +19,5 @@ COPY . /var/www/html/
 
 # Asegurar permisos de lectura y escritura en Linux
 RUN chown -R www-data:www-data /var/www/html
+
+
